@@ -2,13 +2,7 @@ const gulp = require('gulp');
 const axios = require('axios');
 const fs = require('fs'); 
 const log = require('fancy-log');
-
-// http://misfitscentral.com/display.php?t=lyrtab&f=77to83.lyr
-// http://misfitscentral.com/display.php?t=lyrtab&f=77to83.tab
-// http://misfitscentral.com/display.php?t=lyrtab&f=m95ap.lyr
-// http://misfitscentral.com/display.php?t=lyrtab&f=m95ap.tab
-// http://misfitscentral.com/display.php?t=lyrtab&f=m95fm.lyr
-// http://misfitscentral.com/display.php?t=lyrtab&f=m95fm.tab
+const c = require('ansi-colors');
 
 let capitalize = (s) => {
     s = s.toLowerCase().split(' ');
@@ -60,23 +54,22 @@ let getLyricsFromLines = (lines, songSet) => {
         lyricsArr[i].lyrics = lines.slice(lyricsArr[i].start, lyricsArr[i].end).join('\n');
         lyrics[slug(lyricsArr[i].title)] = lyricsArr[i];
     }
-    return lyrics;    
+    return lyrics;
 }
 
-gulp.task('build-lyrics', async (cb) => {
+gulp.task('scrape-lyrics', async (cb) => {
     for (songSet in songSets) {
-        log.info("Fetching lyrics for " + songSet);
+        // log.info("Fetching lyrics for " + c.yellow(songSets[songSet]));
         await axios.get('http://misfitscentral.com/display.php?t=lyrtab&f=' + songSet + '.lyr')
             .then(function (response) {
                 var songSetId = response.config.url.slice(49, -4);
                 var lyrics = getLyricsFromLines(response.data.split('\n'), songSets[songSetId]);
                 fs.writeFileSync("data/lyrics/" + songSetId + ".json", JSON.stringify(lyrics), 'utf8');
-                log.info("Done processing lyrics response for " + songSetId);
             })
             .catch(function (error) {
                 log.error(error);
             });
-        log.info("Done with lyrics for " + songSet);
+        log.info("Done with lyrics for " + c.yellow(songSets[songSet]));
     }
     cb();
 });
@@ -123,20 +116,21 @@ let getTabsFromLines = (lines, songSet) => {
     return tabs;
 }
 
-gulp.task('build-tabs', async (cb) => {
+gulp.task('scrape-tabs', async (cb) => {
     for (songSet in songSets) {
-        log.info("Fetching tabs for " + songSet);
+        // log.info("Fetching tabs for " + c.yellow(songSets[songSet]));
         await axios.get('http://misfitscentral.com/display.php?t=lyrtab&f=' + songSet + '.tab')
             .then(function (response) {
                 var songSetId = response.config.url.slice(49, -4);
                 var tabs = getTabsFromLines(response.data.split('\n'), songSets[songSetId]);
                 fs.writeFileSync("data/tabs/" + songSetId + ".json", JSON.stringify(tabs), 'utf8');
-                log.info("Done processing tabs response for " + songSetId);
             })
             .catch(function (error) {
                 log.error(error);
             });
-        log.info("Done with tabs for " + songSet);
+        log.info("Done with tabs for " + c.yellow(songSets[songSet]));
     }
     cb();
 });
+
+gulp.task('scrape', gulp.parallel('scrape-lyrics', 'scrape-tabs'));
