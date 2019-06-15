@@ -1,6 +1,7 @@
 const gulp = require('gulp');
 const axios = require('axios');
 const fs = require('fs'); 
+const log = require('fancy-log');
 
 // http://misfitscentral.com/display.php?t=lyrtab&f=77to83.lyr
 // http://misfitscentral.com/display.php?t=lyrtab&f=77to83.tab
@@ -56,26 +57,20 @@ let getLyricsFromLines = (lines, songSet) => {
     return lyrics;    
 }
 
-gulp.task('build-lyrics', (cb) => {
+gulp.task('build-lyrics', async (cb) => {
     for (songSet in songSets) {
-        console.log("Starting lyrics for " + songSet);
-        axios.get('http://misfitscentral.com/display.php?t=lyrtab&f=' + songSet + '.lyr')
+        log.info("Fetching lyrics for " + songSet);
+        await axios.get('http://misfitscentral.com/display.php?t=lyrtab&f=' + songSet + '.lyr')
             .then(function (response) {
                 var songSetId = response.config.url.slice(49, -4);
                 var lyrics = getLyricsFromLines(response.data.split('\n'), songSets[songSetId]);
-                fs.writeFile("data/lyrics/" + songSetId + ".json", JSON.stringify(lyrics), 'utf8', function (err) {
-                    if (err) {
-                        console.log("An error occured while writing JSON Object to File.");
-                        return console.log(err);
-                    }
-                 
-                    console.log("JSON file has been saved.");
-                }); 
-                console.log("Done with lyrics for " + songSetId);
+                fs.writeFileSync("data/lyrics/" + songSetId + ".json", JSON.stringify(lyrics), 'utf8');
+                log.info("Done processing lyrics response for " + songSetId);
             })
             .catch(function (error) {
-                console.log(error);
+                log.error(error);
             });
+        log.info("Done with lyrics for " + songSet);
     }
     cb();
 });
