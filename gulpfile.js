@@ -68,11 +68,11 @@ gulp.task('scrape-lyrics', async (cb) => {
                 for (songSlug in lyrics) {
                     fs.writeFileSync("data/lyrics/" + songSetId + "." + songSlug + ".json", JSON.stringify(lyrics[songSlug]), 'utf8');
                 }
+                log.info("Done with lyrics for " + c.yellow(songSets[songSetId]));
             })
             .catch(function (error) {
                 log.error(error);
             });
-        log.info("Done with lyrics for " + c.yellow(songSets[songSet]));
     }
     cb();
 });
@@ -129,11 +129,11 @@ gulp.task('scrape-tabs', async (cb) => {
                 for (songSlug in tabs) {
                     fs.writeFileSync("data/tabs/" + songSetId + "." + songSlug + ".json", JSON.stringify(tabs[songSlug]), 'utf8');
                 }
+                log.info("Done with tabs for " + c.yellow(songSets[songSetId]));
             })
             .catch(function (error) {
                 log.error(error);
             });
-        log.info("Done with tabs for " + c.yellow(songSets[songSet]));
     }
     cb();
 });
