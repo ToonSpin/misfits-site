@@ -3,6 +3,7 @@ const axios = require('axios');
 const fs = require('fs'); 
 const log = require('fancy-log');
 const c = require('ansi-colors');
+const clean = require('gulp-clean');
 
 let capitalize = (s) => {
     s = s.toLowerCase().split(' ');
@@ -64,7 +65,9 @@ gulp.task('scrape-lyrics', async (cb) => {
             .then(function (response) {
                 var songSetId = response.config.url.slice(49, -4);
                 var lyrics = getLyricsFromLines(response.data.split('\n'), songSets[songSetId]);
-                fs.writeFileSync("data/lyrics/" + songSetId + ".json", JSON.stringify(lyrics), 'utf8');
+                for (songSlug in lyrics) {
+                    fs.writeFileSync("data/lyrics/" + songSetId + "." + songSlug + ".json", JSON.stringify(lyrics[songSlug]), 'utf8');
+                }
             })
             .catch(function (error) {
                 log.error(error);
@@ -123,7 +126,9 @@ gulp.task('scrape-tabs', async (cb) => {
             .then(function (response) {
                 var songSetId = response.config.url.slice(49, -4);
                 var tabs = getTabsFromLines(response.data.split('\n'), songSets[songSetId]);
-                fs.writeFileSync("data/tabs/" + songSetId + ".json", JSON.stringify(tabs), 'utf8');
+                for (songSlug in tabs) {
+                    fs.writeFileSync("data/tabs/" + songSetId + "." + songSlug + ".json", JSON.stringify(tabs[songSlug]), 'utf8');
+                }
             })
             .catch(function (error) {
                 log.error(error);
@@ -132,5 +137,12 @@ gulp.task('scrape-tabs', async (cb) => {
     }
     cb();
 });
+
+gulp.task('clean', () => {
+    return gulp.src(['data/**/*.json'], {
+        dot: true
+    }).pipe(clean())
+});
+
 
 gulp.task('scrape', gulp.parallel('scrape-lyrics', 'scrape-tabs'));
