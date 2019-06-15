@@ -1,11 +1,12 @@
 const gulp = require('gulp');
+const { series, parallel } = require('gulp');
 const axios = require('axios');
 const fs = require('fs'); 
 const log = require('fancy-log');
 const c = require('ansi-colors');
 const clean = require('gulp-clean');
 
-let capitalize = (s) => {
+function capitalize(s) {
     s = s.toLowerCase().split(' ');
     for (i in s) {
         if (s[i].length) {
@@ -15,7 +16,7 @@ let capitalize = (s) => {
     return s.join(' ');
 }
 
-let slug = (s) => {
+function slug(s) {
     return s.toLowerCase().split(/[^a-z0-9]+/).join('-');
 }
 
@@ -25,7 +26,7 @@ let songSets = {
     "m95fm": "Famous Monsters",
 }
 
-let getLyricsFromLines = (lines, songSet) => {
+function getLyricsFromLines(lines, songSet) {
     var lyricsArr = [];
     var numLines = lines.length;
     var processing = false;
@@ -58,7 +59,7 @@ let getLyricsFromLines = (lines, songSet) => {
     return lyrics;
 }
 
-gulp.task('scrape-lyrics', async (cb) => {
+async function scrapeLyrics(cb) {
     for (songSet in songSets) {
         // log.info("Fetching lyrics for " + c.yellow(songSets[songSet]));
         await axios.get('http://misfitscentral.com/display.php?t=lyrtab&f=' + songSet + '.lyr')
@@ -75,10 +76,9 @@ gulp.task('scrape-lyrics', async (cb) => {
             });
     }
     cb();
-});
+}
 
-
-let getTabsFromLines = (lines, songSet) => {
+function getTabsFromLines(lines, songSet) {
     var tabsArr = [];
     var numLines = lines.length;
     var processing = false;
@@ -119,7 +119,7 @@ let getTabsFromLines = (lines, songSet) => {
     return tabs;
 }
 
-gulp.task('scrape-tabs', async (cb) => {
+async function scrapeTabs(cb) {
     for (songSet in songSets) {
         // log.info("Fetching tabs for " + c.yellow(songSets[songSet]));
         await axios.get('http://misfitscentral.com/display.php?t=lyrtab&f=' + songSet + '.tab')
@@ -136,13 +136,14 @@ gulp.task('scrape-tabs', async (cb) => {
             });
     }
     cb();
-});
+}
 
-gulp.task('clean', () => {
+function cleanData(cb) {
     return gulp.src(['data/**/*.json'], {
         dot: true
     }).pipe(clean())
-});
+    cp();
+}
 
-
-gulp.task('scrape', gulp.parallel('scrape-lyrics', 'scrape-tabs'));
+exports.scrape = parallel(scrapeLyrics, scrapeTabs);
+exports.clean = cleanData;
