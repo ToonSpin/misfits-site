@@ -60,6 +60,10 @@ function renderIndex() {
         .pipe(gulp.dest('partial/'));
 }
 
+function css() {
+    return gulp.src('css/*.css').pipe(gulp.dest('dist/'));
+}
+
 function capitalize(s) {
     var exceptions = {'bc': true, 'ad': true, 'ii': true, 'u.s.a.': true, 'tv': true,};
     s = s.toLowerCase().split(' ');
@@ -132,6 +136,7 @@ async function scrapeLyrics(cb) {
                         "set": lyrics[songSlug].set,
                         "slug": songSlug,
                     });
+                    lyrics[songSlug].slug = songSlug;
                     fs.writeFileSync("data/lyrics/" + songSlug + ".json", JSON.stringify(lyrics[songSlug]), 'utf8');
                 }
                 log.info("Done with lyrics for " + c.yellow(songSets[songSetId]));
@@ -141,7 +146,14 @@ async function scrapeLyrics(cb) {
             });
     }
     index.sort((a, b) => a.title.localeCompare(b.title));
-    fs.writeFileSync("data/song_index.json", '{"songs":' + JSON.stringify(index) + '}', 'utf8');
+    index = {
+        "songs": index,
+        "sets": []
+    };
+    for (songSet in songSets) {
+        index.sets.push(songSets[songSet]);
+    }
+    fs.writeFileSync("data/song_index.json", JSON.stringify(index), 'utf8');
     cb();
 }
 
@@ -182,6 +194,7 @@ function getTabsFromLines(lines, songSet) {
             tabs[titleSlug] = {
                 title: tabsArr[i].title,
                 set: tabsArr[i].set,
+                slug: titleSlug,
             }
             tabs[titleSlug].versions = [];
         }
@@ -217,9 +230,8 @@ function cleanData(cb) {
 }
 
 function cleanDist(cb) {
-    return gulp.src(['dist/'], {
+    return gulp.src(['dist/**/*.html'], ['dist/**/*.css'], {
         dot: true,
-        allowEmpty: true,
     }).pipe(clean())
     cp();
 }

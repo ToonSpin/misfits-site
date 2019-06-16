@@ -1,6 +1,7 @@
 {% extends "base.twig" %}
-{% block title %}{{ parent() }} Tabs{% endblock %}
-{% block song_content %}
+{% block page_title %}{{ parent() }} Tabs{% endblock %}
+{% block title %}{{ parent() }} <a href="/lyrics/{{ slug }}.html">lyrics</a>{% endblock %}
+{% block content %}
     {% for version in versions %}
     {% if version.version %}
     <h2>{{ version.version|e }}</h2>

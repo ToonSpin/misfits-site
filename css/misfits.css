@@ -1,0 +1,60 @@
+@media all {
+    body, td, p, pre.lyrics {
+        font-family: 'Source Sans Pro', sans-serif;
+    }
+
+    code, pre {
+        font-family: 'Source Code Pro', monospace;
+    }
+}
+
+@media screen {
+    body, td, p {
+        font-size: 14px;
+        background-color: #222;
+        color: #ccc;
+    }
+
+    a {
+        text-decoration: none;
+        color: #C6F;
+    }
+
+    body {
+        display: flex;
+        flex-direction: row;
+        margin: 5vh 5vw;
+    }
+
+    #content {
+        flex-grow: 1;
+    }
+
+    h1:first-child {
+        margin-top: 0;
+    }
+
+    #content h1 a {
+        margin-left: 1em;
+        font-size: 14px;
+    }
+
+    #index ul, #index ul li {
+        list-style: none;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+    #index ul {
+        display: table;
+    }
+    #index li {
+        display: table-row;
+    }
+    #index li div {
+        display: table-cell;
+    }
+    #index li div.lyrics-link, #index li div.tabs-link {
+        padding-right: 1em;
+    }
+}

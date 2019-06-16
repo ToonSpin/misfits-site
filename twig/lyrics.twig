@@ -1,5 +1,6 @@
 {% extends "base.twig" %}
-{% block title %}{{ parent() }} Lyrics{% endblock %}
-{% block song_content %}
-<pre>{{ lyrics|e }}</pre>
+{% block page_title %}{{ parent() }} Lyrics{% endblock %}
+{% block title %}{{ parent() }} <a href="/tabs/{{ slug }}.html">tabs</a>{% endblock %}
+{% block content %}
+<pre class="lyrics">{{ lyrics|e }}</pre>
 {% endblock %}

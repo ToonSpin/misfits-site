@@ -1,9 +1,14 @@
+{% for songSet in sets %}
+<h1>{{ songSet|e }}</h1>
 <ul>
 {% for song in songs %}
+{% if song.set == songSet %}
     <li>
-        <div class="title">{{ song.title|e }}</div>
         <div class="lyrics-link"><a href="/lyrics/{{ song.slug }}.html">lyrics</a></div>
         <div class="tabs-link"><a href="/tabs/{{ song.slug }}.html">tabs</a></div>
+        <div class="title">{{ song.title|e }}</div>
     </li>
+{% endif %}
 {% endfor %}
 </ul>
+{% endfor %}
