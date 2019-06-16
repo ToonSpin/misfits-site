@@ -2,5 +2,11 @@
 {% block page_title %}{{ parent() }} Lyrics{% endblock %}
 {% block title %}{{ parent() }} <a href="/tabs/{{ slug }}.html">tabs</a>{% endblock %}
 {% block content %}
-<pre class="lyrics">{{ lyrics|e }}</pre>
+{% set lyrics_chunks = lyrics|split("\n\n") %}
+<pre class="lyrics">
+{% for chunk in lyrics_chunks %}
+<div class="lyrics-chunk">{{ chunk|e }}
+
+</div>{% endfor %}
+</pre>
 {% endblock %}
