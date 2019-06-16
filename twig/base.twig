@@ -7,7 +7,7 @@
 </head>
 <body>
     <div id="content">
-        <h1>{% block title %}{{ title|e }}{% endblock %}</h1>
+        <h1>{% block title %}{{ title|e }}{% endblock %} <a href="/">home</a></h1>
         {% block content %}{% endblock %}
     </div>
     <div id="index">{% include "../partial/song_index.html" %}</div>

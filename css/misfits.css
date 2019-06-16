@@ -26,6 +26,57 @@
         margin: 5vh 5vw;
     }
 
+    #homepage-index {
+        flex-grow: 1;
+        display: flex;
+    }
+
+    #homepage-index .song {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    @media (max-width: 1000px) {
+        #index {
+            display: none;
+        }
+
+        #homepage-index {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        #homepage-index .song .title {
+            flex-grow: 1;
+        }
+    }
+    @media (min-width: 1001px) {
+        #homepage-index {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+    }
+
+    #homepage-index .song {
+        background-color: #333;
+        margin: .5em;
+        padding: .5em;
+        border-radius: .5em;
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    #homepage-index div {
+        margin: .25em;
+    }
+
+    #homepage-index .song .lyrics-link, #homepage-index .song .tabs-link {
+        font-size: 60%;
+        margin-left: 1em;
+    }
+
     #content {
         flex-grow: 1;
     }
@@ -37,6 +88,8 @@
     #content h1 a {
         margin-left: 1em;
         font-size: 14px;
+        font-weight: bold;
+        text-transform: uppercase;
     }
 
     #index ul, #index ul li {

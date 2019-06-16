@@ -60,6 +60,28 @@ function renderIndex() {
         .pipe(gulp.dest('partial/'));
 }
 
+function renderHomepage() {
+    var template = twig({
+        id: "homepage",
+        path: __dirname + '/twig/homepage.twig',
+        async: false,
+    });
+
+    return gulp.src('data/song_index.json')
+        .pipe(through2.obj(function(file, _, cb) {
+            if (file.isBuffer()) {
+                var jsonData = JSON.parse(file.contents.toString());
+                file.contents = Buffer.from(template.render(jsonData));
+            }
+            cb(null, file);
+        }))
+        .pipe(rename({
+            basename: 'index',
+            extname: '.html',
+        }))
+        .pipe(gulp.dest('dist/'));
+}
+
 function css() {
     return gulp.src('css/*.css').pipe(gulp.dest('dist/'));
 }
@@ -236,4 +258,4 @@ function cleanDist(cb) {
 
 exports.scrape = parallel(scrapeLyrics, scrapeTabs);
 exports.clean = parallel(cleanData, cleanDist);
-exports.render = series(cleanDist, renderIndex, parallel(renderLyrics, renderTabs));
+exports.render = series(cleanDist, renderIndex, parallel(css, renderHomepage, renderLyrics, renderTabs));
