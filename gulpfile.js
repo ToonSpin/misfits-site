@@ -226,14 +226,12 @@ function cleanData(cb) {
     return gulp.src(['data/**/*.json'], {
         dot: true
     }).pipe(clean())
-    cp();
 }
 
 function cleanDist(cb) {
     return gulp.src(['dist/**/*.html'], ['dist/**/*.css'], {
         dot: true,
     }).pipe(clean())
-    cp();
 }
 
 exports.scrape = parallel(scrapeLyrics, scrapeTabs);
