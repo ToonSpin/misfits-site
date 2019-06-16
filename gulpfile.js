@@ -13,7 +13,8 @@ const twig = Twig.twig;
 function renderLyrics() {
     var template = twig({
         id: "lyrics",
-        data: fs.readFileSync('./twig/lyrics.twig', {encoding: 'utf-8'}),
+        path: __dirname + '/twig/lyrics.twig',
+        async: false,
     });
 
     return gulp.src('data/lyrics/*.json')
@@ -33,7 +34,8 @@ function renderLyrics() {
 function renderTabs() {
     var template = twig({
         id: "tabs",
-        data: fs.readFileSync('./twig/tabs.twig', {encoding: 'utf-8'}),
+        path: __dirname + '/twig/tabs.twig',
+        async: false,
     });
 
     return gulp.src('data/tabs/*.json')
