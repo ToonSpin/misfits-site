@@ -30,6 +30,26 @@ function renderLyrics() {
         .pipe(gulp.dest('dist/lyrics/'));
 }
 
+function renderTabs() {
+    var template = twig({
+        id: "tabs",
+        data: fs.readFileSync('./twig/tabs.twig', {encoding: 'utf-8'}),
+    });
+
+    return gulp.src('data/tabs/*.json')
+        .pipe(through2.obj(function(file, _, cb) {
+            if (file.isBuffer()) {
+                var jsonData = JSON.parse(file.contents.toString());
+                file.contents = Buffer.from(template.render(jsonData));
+            }
+            cb(null, file);
+        }))
+        .pipe(rename({
+            extname: '.html',
+        }))
+        .pipe(gulp.dest('dist/tabs/'));
+}
+
 function capitalize(s) {
     s = s.toLowerCase().split(' ');
     for (i in s) {
@@ -136,9 +156,13 @@ function getTabsFromLines(lines, songSet) {
         tabsArr[i].tabs = lines.slice(tabsArr[i].start, tabsArr[i].end).join('\n');
         var titleSlug = slug(tabsArr[i].title);
         if (!tabs.hasOwnProperty(titleSlug)) {
-            tabs[titleSlug] = [];
+            tabs[titleSlug] = {
+                title: tabsArr[i].title,
+                set: tabsArr[i].set,
+            }
+            tabs[titleSlug].versions = [];
         }
-        tabs[titleSlug].push(tabsArr[i]);
+        tabs[titleSlug].versions.push(tabsArr[i]);
     }
     return tabs;
 }
@@ -179,4 +203,4 @@ function cleanDist(cb) {
 
 exports.scrape = parallel(scrapeLyrics, scrapeTabs);
 exports.clean = parallel(cleanData, cleanDist);
-exports.render = series(cleanDist, parallel(renderLyrics));
+exports.render = series(cleanDist, parallel(renderLyrics, renderTabs));
