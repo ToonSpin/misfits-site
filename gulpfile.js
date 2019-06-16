@@ -5,6 +5,30 @@ const fs = require('fs');
 const log = require('fancy-log');
 const c = require('ansi-colors');
 const clean = require('gulp-clean');
+const through2 = require('through2');
+const rename = require("gulp-rename");
+const Twig = require('twig');
+const twig = Twig.twig;
+
+function renderLyrics() {
+    var template = twig({
+        id: "lyrics",
+        data: fs.readFileSync('./twig/lyrics.twig', {encoding: 'utf-8'}),
+    });
+
+    return gulp.src('data/lyrics/*.json')
+        .pipe(through2.obj(function(file, _, cb) {
+            if (file.isBuffer()) {
+                var jsonData = JSON.parse(file.contents.toString());
+                file.contents = Buffer.from(template.render(jsonData));
+            }
+            cb(null, file);
+        }))
+        .pipe(rename({
+            extname: '.html',
+        }))
+        .pipe(gulp.dest('dist/lyrics/'));
+}
 
 function capitalize(s) {
     s = s.toLowerCase().split(' ');
@@ -145,5 +169,14 @@ function cleanData(cb) {
     cp();
 }
 
+function cleanDist(cb) {
+    return gulp.src(['dist/'], {
+        dot: true,
+        allowEmpty: true,
+    }).pipe(clean())
+    cp();
+}
+
 exports.scrape = parallel(scrapeLyrics, scrapeTabs);
-exports.clean = cleanData;
+exports.clean = parallel(cleanData, cleanDist);
+exports.render = series(cleanDist, parallel(renderLyrics));
