@@ -10,14 +10,14 @@ const rename = require("gulp-rename");
 const Twig = require('twig');
 const twig = Twig.twig;
 
-function renderLyrics() {
+function render(type) {
     var template = twig({
-        id: "lyrics",
-        path: __dirname + '/twig/lyrics.twig',
+        id: type,
+        path: __dirname + '/twig/' + type + '.twig',
         async: false,
     });
 
-    return gulp.src('data/lyrics/*.json')
+    return gulp.src('data/' + type + '/*.json')
         .pipe(through2.obj(function(file, _, cb) {
             if (file.isBuffer()) {
                 var jsonData = JSON.parse(file.contents.toString());
@@ -28,28 +28,15 @@ function renderLyrics() {
         .pipe(rename({
             extname: '.html',
         }))
-        .pipe(gulp.dest('dist/lyrics/'));
+        .pipe(gulp.dest('dist/' + type + '/'));
+}
+
+function renderLyrics() {
+    return render('lyrics');
 }
 
 function renderTabs() {
-    var template = twig({
-        id: "tabs",
-        path: __dirname + '/twig/tabs.twig',
-        async: false,
-    });
-
-    return gulp.src('data/tabs/*.json')
-        .pipe(through2.obj(function(file, _, cb) {
-            if (file.isBuffer()) {
-                var jsonData = JSON.parse(file.contents.toString());
-                file.contents = Buffer.from(template.render(jsonData));
-            }
-            cb(null, file);
-        }))
-        .pipe(rename({
-            extname: '.html',
-        }))
-        .pipe(gulp.dest('dist/tabs/'));
+    return render('tabs');
 }
 
 function capitalize(s) {
