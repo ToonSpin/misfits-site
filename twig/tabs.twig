@@ -3,8 +3,8 @@
 {% block song_content %}
     {% for version in versions %}
     {% if version.version %}
-    <h2>{{ version.version }}</h2>
+    <h2>{{ version.version|e }}</h2>
     {% endif %}
-    <pre>{{ version.tabs }}</pre>
+    <pre>{{ version.tabs|e }}</pre>
     {% endfor %}
 {% endblock %}
