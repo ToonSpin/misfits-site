@@ -1,0 +1,9 @@
+<ul>
+{% for song in songs %}
+    <li>
+        <div class="title">{{ song.title|e }}</div>
+        <div class="lyrics-link"><a href="/lyrics/{{ song.slug }}.html">lyrics</a></div>
+        <div class="tabs-link"><a href="/tabs/{{ song.slug }}.html">tabs</a></div>
+    </li>
+{% endfor %}
+</ul>

@@ -39,6 +39,27 @@ function renderTabs() {
     return render('tabs');
 }
 
+function renderIndex() {
+    var template = twig({
+        id: "index",
+        path: __dirname + '/twig/song_index.twig',
+        async: false,
+    });
+
+    return gulp.src('data/song_index.json')
+        .pipe(through2.obj(function(file, _, cb) {
+            if (file.isBuffer()) {
+                var jsonData = JSON.parse(file.contents.toString());
+                file.contents = Buffer.from(template.render(jsonData));
+            }
+            cb(null, file);
+        }))
+        .pipe(rename({
+            extname: '.html',
+        }))
+        .pipe(gulp.dest('partial/'));
+}
+
 function capitalize(s) {
     s = s.toLowerCase().split(' ');
     for (i in s) {
@@ -93,6 +114,7 @@ function getLyricsFromLines(lines, songSet) {
 }
 
 async function scrapeLyrics(cb) {
+    var index = [];
     for (songSet in songSets) {
         // log.info("Fetching lyrics for " + c.yellow(songSets[songSet]));
         await axios.get('http://misfitscentral.com/display.php?t=lyrtab&f=' + songSet + '.lyr')
@@ -100,7 +122,12 @@ async function scrapeLyrics(cb) {
                 var songSetId = response.config.url.slice(49, -4);
                 var lyrics = getLyricsFromLines(response.data.split('\n'), songSets[songSetId]);
                 for (songSlug in lyrics) {
-                    fs.writeFileSync("data/lyrics/" + songSetId + "." + songSlug + ".json", JSON.stringify(lyrics[songSlug]), 'utf8');
+                    index.push({
+                        "title": lyrics[songSlug].title,
+                        "set": lyrics[songSlug].set,
+                        "slug": songSlug,
+                    });
+                    fs.writeFileSync("data/lyrics/" + songSlug + ".json", JSON.stringify(lyrics[songSlug]), 'utf8');
                 }
                 log.info("Done with lyrics for " + c.yellow(songSets[songSetId]));
             })
@@ -108,6 +135,8 @@ async function scrapeLyrics(cb) {
                 log.error(error);
             });
     }
+    index.sort((a, b) => a.title.localeCompare(b.title));
+    fs.writeFileSync("data/song_index.json", '{"songs":' + JSON.stringify(index) + '}', 'utf8');
     cb();
 }
 
@@ -164,7 +193,7 @@ async function scrapeTabs(cb) {
                 var songSetId = response.config.url.slice(49, -4);
                 var tabs = getTabsFromLines(response.data.split('\n'), songSets[songSetId]);
                 for (songSlug in tabs) {
-                    fs.writeFileSync("data/tabs/" + songSetId + "." + songSlug + ".json", JSON.stringify(tabs[songSlug]), 'utf8');
+                    fs.writeFileSync("data/tabs/" + songSlug + ".json", JSON.stringify(tabs[songSlug]), 'utf8');
                 }
                 log.info("Done with tabs for " + c.yellow(songSets[songSetId]));
             })
@@ -192,4 +221,4 @@ function cleanDist(cb) {
 
 exports.scrape = parallel(scrapeLyrics, scrapeTabs);
 exports.clean = parallel(cleanData, cleanDist);
-exports.render = series(cleanDist, parallel(renderLyrics, renderTabs));
+exports.render = series(cleanDist, renderIndex, parallel(renderLyrics, renderTabs));
