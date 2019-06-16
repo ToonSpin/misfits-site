@@ -61,10 +61,15 @@ function renderIndex() {
 }
 
 function capitalize(s) {
+    var exceptions = {'bc': true, 'ad': true, 'ii': true, 'u.s.a.': true, 'tv': true,};
     s = s.toLowerCase().split(' ');
     for (i in s) {
-        if (s[i].length) {
-            s[i] = s[i][0].toUpperCase() + s[i].substring(1);
+        if (s[i] in exceptions) {
+            s[i] = s[i].toUpperCase();
+        } else {
+            if (s[i].length) {
+                s[i] = s[i][0].toUpperCase() + s[i].substring(1);
+            }
         }
     }
     return s.join(' ');
