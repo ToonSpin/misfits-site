@@ -102,7 +102,7 @@ function capitalize(s) {
 }
 
 function slug(s) {
-    return s.toLowerCase().split(/[^a-z0-9]+/).join('-');
+    return s.toLowerCase().split(/[^a-z0-9]+/).join('');
 }
 
 let songSets = {
