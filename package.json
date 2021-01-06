@@ -3,11 +3,11 @@
     "description": "Misfits lyrics and tabs",
     "version": "0.1.0",
     "dependencies": {
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "gulp": "^4.0.2",
         "gulp-clean": "^0.4.0",
         "gulp-rename": "^1.4.0",
-        "through2": "^3.0.1",
-        "twig": "^1.15.0"
+        "through2": "^3.0.2",
+        "twig": "^1.15.4"
     }
 }
