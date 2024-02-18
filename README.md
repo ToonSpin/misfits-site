@@ -39,3 +39,10 @@ site live at http://localhost:8000, run this in the project root:
         --mount type=bind,src=`pwd`/dist,dst=/usr/local/apache2/htdocs \
         -p 8000:80 \
         httpd
+
+Or:
+
+    podman run --rm \
+        --mount type=bind,src=`pwd`/dist,dst=/usr/local/apache2/htdocs \
+        -p 8000:80 \
+        docker.io/httpd
