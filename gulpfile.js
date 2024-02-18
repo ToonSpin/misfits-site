@@ -259,3 +259,9 @@ function cleanDist(cb) {
 exports.scrape = parallel(scrapeLyrics, scrapeTabs);
 exports.clean = parallel(cleanData, cleanDist);
 exports.render = series(cleanDist, renderIndex, parallel(css, renderHomepage, renderLyrics, renderTabs));
+
+exports.default = series(
+    parallel(scrapeLyrics, scrapeTabs),
+    renderIndex,
+    parallel(css, renderHomepage, renderLyrics, renderTabs)
+);
